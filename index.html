@@ -4,16 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Can Bartrina - Compte enrere</title>
-  <!-- Importamos una fuente estilo Halloween/Terror desde Google Fonts -->
   <link rel="preconnect" href="https://googleapis.com">
   <link rel="preconnect" href="https://gstatic.com" crossorigin>
   <link href="https://googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  
   <style>
     * {
       box-sizing: border-box;
     }
     body {
-      /* Aplicamos la fuente "Creepster" con caída a un estilo terrorífico */
       font-family: 'Creepster', cursive, system-ui, sans-serif;
       display: flex;
       flex-direction: column;
@@ -21,7 +20,7 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background-color: #000000; /* Fondo negro */
+      background-color: #000000;
       overflow: hidden;
     }
     .container {
@@ -33,12 +32,14 @@
       position: relative;
     }
     #timer {
-      font-size: 25vw; /* Tamaño dinámico basado en el ancho de la pantalla */
-      font-weight: bold;
-      color: #ff0000; /* Dígitos rojos */
+      font-size: 28vw;
+      font-weight: normal;
+      color: #ff0000;
       text-align: center;
       line-height: 1;
       user-select: none;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
     }
     .buttons {
       position: absolute;
@@ -47,28 +48,32 @@
       transform: translateX(-50%);
       display: flex;
       gap: 1rem;
-      opacity: 0.3; /* Los botones se ven tenues para no distraer */
+      opacity: 0.2;
       transition: opacity 0.3s;
     }
     .buttons:hover {
-      opacity: 1; /* Se iluminan por completo al pasar el ratón por encima */
+      opacity: 1;
     }
     .buttons button {
       padding: 0.8rem 1.8rem;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       cursor: pointer;
       border: 2px solid #ff0000;
       border-radius: 5px;
       background-color: transparent;
       color: #ff0000;
       font-family: inherit;
-      font-weight: bold;
       transition: all 0.2s;
     }
     .buttons button:hover {
       background-color: #ff0000;
       color: #000000;
+      box-shadow: 0 0 15px #ff0000;
     }
+
+    /* ======================================================= */
+    /* NUEVO: ESTILOS PARA LA VENTANA EMERGENTE (JUMPSCARE)    */
+    /* ======================================================= */
     .jumpscare-overlay {
       position: fixed;
       top: 0;
@@ -76,7 +81,7 @@
       width: 100vw;
       height: 100vh;
       background-color: #000000;
-      background-image: url('https://unsplash.com');
+      background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWU2bWQ2aDd1azhobTM2YmZ5ZW9kNjZueWQ0MTFxczV2MnBxaXZpZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/axdUGyhEPyZ2hwMtaa/giphy.gif');
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain; /* O 'cover' si quieres que recorte y llene toda la pantalla */
@@ -106,13 +111,14 @@
   <div class="container">
     <div id="timer">05:00</div>
     <div class="buttons">
-      <button id="start">Inici</button>
+      <button id="start">Iniciar</button>
       <button id="reset">Torna a començar</button>
     </div>
   </div>
+
   <!-- NUEVO: Elemento div para la ventana emergente -->
   <div id="jumpscare" class="jumpscare-overlay"></div>
-  <!-- Elementos de audio ocultos -->
+
   <audio id="bg-sound" src="fondo.mp3" preload="auto" loop></audio>
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
@@ -123,9 +129,12 @@
     
     const bgSound = document.getElementById("bg-sound");
     const alarmSound = document.getElementById("alarm-sound");
+    
+    // NUEVO: Referencia al elemento del susto
+    const jumpscareOverlay = document.getElementById("jumpscare");
 
     let countdown;
-    let timeLeft = 3; // 5 minutos en segundos
+    let timeLeft = 300; 
     let isRunning = false;
 
     function formatTime(seconds) {
@@ -139,7 +148,7 @@
       isRunning = true;
 
       bgSound.play().catch(error => {
-        console.log("Error al reproduir el so de fons: ", error);
+        console.log("Error al reproducir sonido de fondo: ", error);
       });
 
       countdown = setInterval(() => {
@@ -154,10 +163,12 @@
           bgSound.currentTime = 0;
           
           alarmSound.play().catch(error => {
-            console.log("Error al reproduir l'alarma: ", error);
+            console.log("Error al reproducir la alarma: ", error);
           });
           
-          //alert("¡S'ha acabat el temps!");
+          // =======================================================
+          // MODIFICADO: Muestra la ventana emergente en vez de alert
+          // =======================================================
           jumpscareOverlay.style.display = "block";
         }
       }, 1000);
@@ -187,7 +198,7 @@
       alarmSound.pause();
       alarmSound.currentTime = 0;
     });
-    
+
     startButton.addEventListener("click", startTimer);
     resetButton.addEventListener("click", resetTimer);
   </script>
