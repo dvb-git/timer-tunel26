@@ -120,7 +120,7 @@
   <div id="jumpscare" class="jumpscare-overlay"></div>
 
   <audio id="bg-sound" src="fondo.mp3" preload="auto" loop></audio>
-  <audio id="bg-sound" src="music-box.mp3" preload="auto" loop></audio>
+  <audio id="bg-sound2" src="music-box.mp3" preload="auto" loop></audio>
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
   <script>
@@ -129,6 +129,7 @@
     const resetButton = document.getElementById("reset");
     
     const bgSound = document.getElementById("bg-sound");
+    const bgSound2 = document.getElementById("bg-sound2");
     const alarmSound = document.getElementById("alarm-sound");
     
     // NUEVO: Referencia al elemento del susto
@@ -150,6 +151,9 @@
 
       bgSound.play().catch(error => {
         console.log("Error al reproducir sonido de fondo: ", error);
+      });
+      bgSound2.play().catch(error => {
+        console.log("Error al reproducir sonido 2 de fondo: ", error);
       });
 
       countdown = setInterval(() => {
