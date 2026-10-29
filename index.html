@@ -193,7 +193,7 @@
     function resetTimer() {
       clearInterval(countdown);
       isRunning = false;
-      timeLeft = 120; // CORREGIDO: se mantiene en 5 minutos tras reiniciar
+      timeLeft = 90; // CORREGIDO: se mantiene en 5 minutos tras reiniciar
       timerDisplay.textContent = formatTime(timeLeft);
       
       bgSound.pause(); bgSound.currentTime = 0;
