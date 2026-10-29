@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5-Minute Countdown Timer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f4f4f4;
+    }
+    .container {
+      text-align: center;
+      background: #fff;
+      padding: 2rem 3rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    #timer {
+      font-size: 4rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    .buttons button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      margin: 0 0.3rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      transition: background-color 0.2s;
+    }
+    .buttons button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="timer">05:00</div>
+    <div class="buttons">
+      <button id="start">Start</button>
+      <button id="reset">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const timerDisplay = document.getElementById("timer");
+    const startButton = document.getElementById("start");
+    const resetButton = document.getElementById("reset");
+
+    let countdown;
+    let timeLeft = 300; // 5 minutes in seconds (5 * 60)
+    let isRunning = false;
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const secs = String(seconds % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+
+      countdown = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          timerDisplay.textContent = formatTime(timeLeft);
+        } else {
+          clearInterval(countdown);
+          isRunning = false;
+          alert("Time's up!");
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      isRunning = false;
+      timeLeft = 300;
+      timerDisplay.textContent = formatTime(timeLeft);
+    }
+
+    startButton.addEventListener("click", startTimer);
+    resetButton.addEventListener("click", resetTimer);
+  </script>
+
+</body>
+</html>
