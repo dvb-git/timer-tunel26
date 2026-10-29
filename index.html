@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Temporizador Gigante</title>
+  <title>Can Bartrina - Compte enrere</title>
   <style>
     * {
       box-sizing: border-box;
@@ -71,8 +71,8 @@
   <div class="container">
     <div id="timer">05:00</div>
     <div class="buttons">
-      <button id="start">Iniciar</button>
-      <button id="reset">Reiniciar</button>
+      <button id="start">Inici</button>
+      <button id="reset">Torna a començar</button>
     </div>
   </div>
 
@@ -103,7 +103,7 @@
       isRunning = true;
 
       bgSound.play().catch(error => {
-        console.log("Error al reproducir sonido de fondo: ", error);
+        console.log("Error al reproduir el so de fons: ", error);
       });
 
       countdown = setInterval(() => {
@@ -118,10 +118,10 @@
           bgSound.currentTime = 0;
           
           alarmSound.play().catch(error => {
-            console.log("Error al reproducir la alarma: ", error);
+            console.log("Error al reproduir l'alarma: ", error);
           });
           
-          alert("¡Tiempo cumplido!");
+          alert("¡S'ha acabat el temps!");
         }
       }, 1000);
     }
