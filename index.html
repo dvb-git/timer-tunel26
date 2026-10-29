@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Temporizador de 5 Minutos con Sonido</title>
+  <title>Temporizador de 5 Minutos con Sonidos</title>
   <style>
     body {
       font-family: sans-serif;
@@ -54,13 +54,16 @@
     </div>
   </div>
 
-  <!-- Elemento de audio oculto -->
+  <!-- Elementos de audio ocultos -->
+  <audio id="bg-sound" src="fondo.mp3" preload="auto" loop></audio>
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
   <script>
     const timerDisplay = document.getElementById("timer");
     const startButton = document.getElementById("start");
     const resetButton = document.getElementById("reset");
+    
+    const bgSound = document.getElementById("bg-sound");
     const alarmSound = document.getElementById("alarm-sound");
 
     let countdown;
@@ -77,8 +80,11 @@
       if (isRunning) return;
       isRunning = true;
 
-      // Nota: Los navegadores exigen una interacción del usuario (como hacer clic en "Iniciar") 
-      // antes de permitir que una página web reproduzca audio automáticamente.
+      // Inicia el sonido de fondo (gracias al clic en "Iniciar" el navegador lo permite)
+      bgSound.play().catch(error => {
+        console.log("Error al reproducir sonido de fondo: ", error);
+      });
+
       countdown = setInterval(() => {
         if (timeLeft > 0) {
           timeLeft--;
@@ -87,9 +93,13 @@
           clearInterval(countdown);
           isRunning = false;
           
-          // Reproduce el sonido de la alarma
+          // Detiene el sonido de fondo al terminar
+          bgSound.pause();
+          bgSound.currentTime = 0;
+          
+          // Reproduce la alarma final
           alarmSound.play().catch(error => {
-            console.log("Error al reproducir el sonido: ", error);
+            console.log("Error al reproducir la alarma: ", error);
           });
           
           alert("¡Tiempo cumplido!");
@@ -103,7 +113,10 @@
       timeLeft = 300;
       timerDisplay.textContent = formatTime(timeLeft);
       
-      // Detiene el sonido y lo regresa al principio si se reinicia el temporizador
+      // Detiene y resetea ambos sonidos
+      bgSound.pause();
+      bgSound.currentTime = 0;
+      
       alarmSound.pause();
       alarmSound.currentTime = 0;
     }
