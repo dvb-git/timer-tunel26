@@ -122,6 +122,7 @@
   <audio id="bg-sound" src="fondo.mp3" preload="auto" loop></audio>
   <audio id="bg-sound2" src="music-box.mp3" preload="auto" loop></audio>
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
+  <audio id="alarm-sound2" src="scream.mp3" preload="auto"></audio>
 
   <script>
     const timerDisplay = document.getElementById("timer");
@@ -131,6 +132,7 @@
     const bgSound = document.getElementById("bg-sound");
     const bgSound2 = document.getElementById("bg-sound2");
     const alarmSound = document.getElementById("alarm-sound");
+    const alarmSound2 = document.getElementById("alarm-sound2");
     
     // NUEVO: Referencia al elemento del susto
     const jumpscareOverlay = document.getElementById("jumpscare");
@@ -166,9 +168,15 @@
           
           bgSound.pause();
           bgSound.currentTime = 0;
+          bgSound2.pause();
+          bgSound2.currentTime = 0;
           
           alarmSound.play().catch(error => {
             console.log("Error al reproducir la alarma: ", error);
+          });
+
+          alarmSound2.play().catch(error => {
+            console.log("Error al reproducir la alarma 2: ", error);
           });
           
           // =======================================================
@@ -187,9 +195,13 @@
       
       bgSound.pause();
       bgSound.currentTime = 0;
+      bgSound2.pause();
+      bgSound2.currentTime = 0;
       
       alarmSound.pause();
       alarmSound.currentTime = 0;
+      alarmSound2.pause();
+      alarmSound2.currentTime = 0;
       
       // NUEVO: Oculta el susto si se le da a reiniciar manualmente
       jumpscareOverlay.style.display = "none";
@@ -202,6 +214,8 @@
       jumpscareOverlay.style.display = "none";
       alarmSound.pause();
       alarmSound.currentTime = 0;
+      alarmSound2.pause();
+      alarmSound2.currentTime = 0;
     });
 
     startButton.addEventListener("click", startTimer);
