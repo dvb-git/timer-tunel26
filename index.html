@@ -6,7 +6,7 @@
   <title>Can Bartrina - Compte enrere</title>
   <link rel="preconnect" href="https://googleapis.com">
   <link rel="preconnect" href="https://gstatic.com" crossorigin>
-  <link href="https://googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <link href="https://googleapis.com" rel="stylesheet">
   
   <style>
     * {
@@ -41,6 +41,10 @@
       letter-spacing: 2px;
       text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
     }
+    
+    /* ======================================================= */
+    /* MODIFICADO: Transición suave de opacidad e invisibilidad*/
+    /* ======================================================= */
     .buttons {
       position: absolute;
       bottom: 5vh;
@@ -49,11 +53,20 @@
       display: flex;
       gap: 1rem;
       opacity: 0.2;
-      transition: opacity 0.3s;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      visibility: visible;
     }
+    /* Al pasar el ratón por encima recupera la opacidad completa */
     .buttons:hover {
-      opacity: 1;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
+    /* Clase auxiliar controlada por JavaScript para ocultarlos */
+    .buttons.hide-buttons {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
     .buttons button {
       padding: 0.8rem 1.8rem;
       font-size: 1.5rem;
@@ -71,9 +84,6 @@
       box-shadow: 0 0 15px #ff0000;
     }
 
-    /* ======================================================= */
-    /* NUEVO: ESTILOS PARA LA VENTANA EMERGENTE (JUMPSCARE)    */
-    /* ======================================================= */
     .jumpscare-overlay {
       position: fixed;
       top: 0;
@@ -81,7 +91,7 @@
       width: 100vw;
       height: 100vh;
       background-color: #000000;
-      background-image: url('https://c.tenor.com/OWqCMKoDF0MAAAAC/tenor.gif');
+      background-image: url('https://tenor.com');
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain; 
@@ -109,9 +119,8 @@
 <body>
 
   <div class="container">
-    <!-- Ajustado texto inicial a 05:00 para coincidir con timeLeft = 300 -->
     <div id="timer">05:00</div>
-    <div class="buttons">
+    <div id="button-container" class="buttons">
       <button id="start">Iniciar</button>
       <button id="reset">Torna a començar</button>
     </div>
@@ -132,13 +141,13 @@
     const timerDisplay = document.getElementById("timer");
     const startButton = document.getElementById("start");
     const resetButton = document.getElementById("reset");
+    const buttonContainer = document.getElementById("button-container");
     
     const bgSound = document.getElementById("bg-sound");
     const bgSound2 = document.getElementById("bg-sound2");
     const alarmSound = document.getElementById("alarm-sound");
     const alarmSound2 = document.getElementById("alarm-sound2");
     
-    // CORREGIDO: Declaración de las referencias a los audios intermedios
     const sound3min = document.getElementById("sound-3min");
     const sound2min = document.getElementById("sound-2min");
     const sound1min = document.getElementById("sound-1min");
@@ -146,8 +155,31 @@
     const jumpscareOverlay = document.getElementById("jumpscare");
 
     let countdown;
-    let timeLeft = 300; // 5 minutos iniciales
+    let timeLeft = 300; 
     let isRunning = false;
+
+    // =======================================================
+    // NUEVO: Lógica de ocultación por inactividad del ratón
+    // =======================================================
+    let mouseTimer;
+    const idleTimeLimit = 3000; // Tiempo en milisegundos (3 segundos)
+
+    function resetMouseTimer() {
+      // Muestra los botones inmediatamente al mover el ratón
+      buttonContainer.classList.remove("hide-buttons");
+      
+      // Limpia el temporizador anterior y arranca uno nuevo
+      clearTimeout(mouseTimer);
+      mouseTimer = setTimeout(() => {
+        // Solo los oculta si el temporizador está corriendo
+        if (isRunning) {
+          buttonContainer.classList.add("hide-buttons");
+        }
+      }, idleTimeLimit);
+    }
+
+    // Escucha el movimiento del ratón en toda la pantalla
+    document.addEventListener("mousemove", resetMouseTimer);
 
     function formatTime(seconds) {
       const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -158,6 +190,9 @@
     function startTimer() {
       if (isRunning) return;
       isRunning = true;
+
+      // Forzar que se oculten tras los primeros 3 segundos una vez iniciado
+      resetMouseTimer();
 
       bgSound.play().catch(error => console.log("Error fondo 1: ", error));
       bgSound2.play().catch(error => console.log("Error fondo 2: ", error));
@@ -186,6 +221,7 @@
           alarmSound2.play().catch(error => console.log("Error alarma 2: ", error));
           
           jumpscareOverlay.style.display = "block";
+          buttonContainer.classList.remove("hide-buttons"); // Los muestra al terminar
         }
       }, 1000);
     }
@@ -193,7 +229,7 @@
     function resetTimer() {
       clearInterval(countdown);
       isRunning = false;
-      timeLeft = 90; // CORREGIDO: se mantiene en 5 minutos tras reiniciar
+      timeLeft = 90; 
       timerDisplay.textContent = formatTime(timeLeft);
       
       bgSound.pause(); bgSound.currentTime = 0;
@@ -206,6 +242,10 @@
       sound1min.pause(); sound1min.currentTime = 0;
       
       jumpscareOverlay.style.display = "none";
+      
+      // Muestra los botones fijamente al reiniciar el juego
+      clearTimeout(mouseTimer);
+      buttonContainer.classList.remove("hide-buttons");
     }
 
     jumpscareOverlay.addEventListener("click", () => {
@@ -214,7 +254,6 @@
       alarmSound2.pause(); alarmSound2.currentTime = 0;
     });
 
-    // CORREGIDO: Eventos de los botones añadidos correctamente
     startButton.addEventListener("click", startTimer);
     resetButton.addEventListener("click", resetTimer);
   </script>
