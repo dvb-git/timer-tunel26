@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Can Bartrina - Compte enrere</title>
+  <link rel="preconnect" href="https://googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://googleapis.com" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Creepster', cursive, system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #000000;
+      overflow: hidden;
+    }
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+       z-index: 10; /* Mantiene el cronómetro por encima del rastro de la sangre */
+    }
+    #timer {
+      font-size: 28vw;
+      font-weight: normal;
+      color: #ff0000;
+      text-align: center;
+      line-height: 1;
+      user-select: none;
+      letter-spacing: 2px;
+      filter: blur(2px);
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    }
+    
+    /* ======================================================= */
+    /* MODIFICADO: Transición suave de opacidad e invisibilidad*/
+    /* ======================================================= */
+    .buttons {
+      position: absolute;
+      bottom: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 1rem;
+      opacity: 0.2;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      visibility: visible;
+            z-index: 20; /* Asegura que los botones sean siempre clickeables */
+    }
+    /* Al pasar el ratón por encima recupera la opacidad completa */
+    .buttons:hover {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    /* Clase auxiliar controlada por JavaScript para ocultarlos */
+    .buttons.hide-buttons {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .buttons button {
+      padding: 0.8rem 1.8rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border: 2px solid #ff0000;
+      border-radius: 5px;
+      background-color: transparent;
+      color: #ff0000;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .buttons button:hover {
+      background-color: #ff0000;
+      color: #000000;
+      box-shadow: 0 0 15px #ff0000;
+    }
+
+    /* ======================================================= */
+    /* NUEVO: ESTILOS PARA EL GOTEO DE SANGRE                  */
+    /* ======================================================= */
+    .blood-drop {
+      position: absolute;
+      top: -20px;
+      width: 4px;
+      height: 25px;
+      background: linear-gradient(transparent, #8b0000, #ff0000);
+      border-bottom-left-radius: 50%;
+      border-bottom-right-radius: 50%;
+      z-index: 2;
+      opacity: 0.7;
+      pointer-events: none; /* Evita que las gotas bloqueen los clics de la pantalla */
+      animation: drip linear forwards;
+    }
+
+    @keyframes drip {
+      0% {
+        transform: translateY(0) scaleY(1);
+        opacity: 0.8;
+      }
+      80% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(105vh) scaleY(1.5);
+        opacity: 0;
+      }
+    }
+
+    .jumpscare-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000000;
+      background-image: url('jumpscare.gif');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain; 
+      z-index: 9999;
+      display: none; 
+      cursor: pointer; 
+      animation: shake 0.2s infinite; 
+    }
+    
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(0px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(2px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(2px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="timer">05:00</div>
+    <div id="button-container" class="buttons">
+      <button id="start">Iniciar</button>
+      <button id="reset">Torna a començar</button>
+    </div>
+  </div>
+
+  <div id="jumpscare" class="jumpscare-overlay"></div>
+
+  <audio id="bg-sound" src="fondo.mp3" preload="auto" loop></audio>
+  <audio id="bg-sound2" src="music-box.mp3" preload="auto"></audio>
+  <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
+  <audio id="alarm-sound2" src="scream.mp3" preload="auto"></audio>
+  
+  <audio id="sound-3min" src="scary-strings.mp3" preload="auto"></audio>
+  <audio id="sound-2min" src="booms.mp3" preload="auto"></audio>
+  <audio id="sound-1min" src="scary-breath.mp3" preload="auto"></audio>
+
+  <script>
+    const timerDisplay = document.getElementById("timer");
+    const startButton = document.getElementById("start");
+    const resetButton = document.getElementById("reset");
+    const buttonContainer = document.getElementById("button-container");
+    
+    const bgSound = document.getElementById("bg-sound");
+    const bgSound2 = document.getElementById("bg-sound2");
+    const alarmSound = document.getElementById("alarm-sound");
+    const alarmSound2 = document.getElementById("alarm-sound2");
+    
+    const sound3min = document.getElementById("sound-3min");
+    const sound2min = document.getElementById("sound-2min");
+    const sound1min = document.getElementById("sound-1min");
+    
+    const jumpscareOverlay = document.getElementById("jumpscare");
+
+    let countdown;
+    let timeLeft = 300; 
+    let isRunning = false;
+
+    // =======================================================
+    // NUEVO: Lógica de ocultación por inactividad del ratón
+    // =======================================================
+    let mouseTimer;
+    const idleTimeLimit = 3000; // Tiempo en milisegundos (3 segundos)
+
+    function resetMouseTimer() {
+      // Muestra los botones inmediatamente al mover el ratón
+      buttonContainer.classList.remove("hide-buttons");
+      
+      // Limpia el temporizador anterior y arranca uno nuevo
+      clearTimeout(mouseTimer);
+      mouseTimer = setTimeout(() => {
+        // Solo los oculta si el temporizador está corriendo
+        if (isRunning) {
+          buttonContainer.classList.add("hide-buttons");
+        }
+      }, idleTimeLimit);
+    }
+
+    // Escucha el movimiento del ratón en toda la pantalla
+    document.addEventListener("mousemove", resetMouseTimer);
+    
+        /* ======================================================= */
+    /* NUEVO: FUNCIÓN PARA GENERAR GOTAS DE SANGRE             */
+    /* ======================================================= */
+    function createBloodDrop() {
+      const drop = document.createElement("div");
+      drop.classList.add("blood-drop");
+      
+      // Posición horizontal aleatoria
+      drop.style.left = Math.random() * 100 + "vw";
+      
+      // Tamaño y grosor ligeramente aleatorios para mayor realismo
+      const width = Math.random() * 4 + 2; 
+      drop.style.width = width + "px";
+      drop.style.height = (Math.random() * 20 + 20) + "px";
+      
+      // Duración de la caída aleatoria (entre 2 y 5 segundos)
+      const duration = Math.random() * 3 + 2;
+      drop.style.animationDuration = duration + "s";
+      
+      document.body.appendChild(drop);
+      
+      // Elimina la gota del DOM una vez que termina su animación
+      setTimeout(() => {
+        drop.remove();
+      }, duration * 1000);
+    }
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const secs = String(seconds % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+
+      // Forzar que se oculten tras los primeros 3 segundos una vez iniciado
+      resetMouseTimer();
+
+      bgSound.play().catch(error => console.log("Error fondo 1: ", error));
+      bgSound2.play().catch(error => console.log("Error fondo 2: ", error));
+
+      countdown = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          timerDisplay.textContent = formatTime(timeLeft);
+
+          if (timeLeft === 45) { 
+            sound3min.play().catch(e => console.log("Error audio 3 min:", e));
+          } else if (timeLeft === 30) { 
+            sound2min.play().catch(e => console.log("Error audio 2 min:", e));
+          } else if (timeLeft === 15) { 
+            sound1min.play().catch(e => console.log("Error audio 1 min:", e));
+          }
+          
+        } else {
+          clearInterval(countdown);
+          isRunning = false;
+          
+          bgSound.pause(); bgSound.currentTime = 0;
+          bgSound2.pause(); bgSound2.currentTime = 0;
+          
+          alarmSound.play().catch(error => console.log("Error alarma 1: ", error));
+          alarmSound2.play().catch(error => console.log("Error alarma 2: ", error));
+          
+          jumpscareOverlay.style.display = "block";
+          buttonContainer.classList.remove("hide-buttons"); // Los muestra al terminar
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      isRunning = false;
+      timeLeft = 90; 
+      timerDisplay.textContent = formatTime(timeLeft);
+      
+      bgSound.pause(); bgSound.currentTime = 0;
+      bgSound2.pause(); bgSound2.currentTime = 0;
+      alarmSound.pause(); alarmSound.currentTime = 0;
+      alarmSound2.pause(); alarmSound2.currentTime = 0;
+
+      sound3min.pause(); sound3min.currentTime = 0;
+      sound2min.pause(); sound2min.currentTime = 0;
+      sound1min.pause(); sound1min.currentTime = 0;
+      
+      jumpscareOverlay.style.display = "none";
+      
+      // Muestra los botones fijamente al reiniciar el juego
+      clearTimeout(mouseTimer);
+      buttonContainer.classList.remove("hide-buttons");
+    }
+
+    jumpscareOverlay.addEventListener("click", () => {
+      jumpscareOverlay.style.display = "none";
+      alarmSound.pause(); alarmSound.currentTime = 0;
+      alarmSound2.pause(); alarmSound2.currentTime = 0;
+    });
+
+    startButton.addEventListener("click", startTimer);
+    resetButton.addEventListener("click", resetTimer);
+  </script>
+</body>
+</html>
