@@ -89,7 +89,7 @@
     const alarmSound = document.getElementById("alarm-sound");
 
     let countdown;
-    let timeLeft = 300; // 5 minutos en segundos
+    let timeLeft = 3; // 5 minutos en segundos
     let isRunning = false;
 
     function formatTime(seconds) {
@@ -129,7 +129,7 @@
     function resetTimer() {
       clearInterval(countdown);
       isRunning = false;
-      timeLeft = 300;
+      timeLeft = 3;
       timerDisplay.textContent = formatTime(timeLeft);
       
       bgSound.pause();
