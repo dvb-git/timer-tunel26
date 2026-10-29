@@ -3,44 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Temporizador de 5 Minutos con Sonidos</title>
+  <title>Temporizador Gigante</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: sans-serif;
+      font-family: 'Courier New', Courier, monospace, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background: #f4f4f4;
+      background-color: #000000; /* Fondo negro */
+      overflow: hidden;
     }
     .container {
-      text-align: center;
-      background: #fff;
-      padding: 2rem 3rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
     #timer {
-      font-size: 4rem;
+      font-size: 25vw; /* Tamaño dinámico basado en el ancho de la pantalla */
       font-weight: bold;
-      margin-bottom: 1.5rem;
-      color: #333;
+      color: #ff0000; /* Dígitos rojos */
+      text-align: center;
+      line-height: 1;
+      user-select: none;
+    }
+    .buttons {
+      position: absolute;
+      bottom: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 1rem;
+      opacity: 0.3; /* Los botones se ven tenues para no distraer */
+      transition: opacity 0.3s;
+    }
+    .buttons:hover {
+      opacity: 1; /* Se iluminan por completo al pasar el ratón por encima */
     }
     .buttons button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      margin: 0 0.3rem;
+      padding: 0.8rem 1.8rem;
+      font-size: 1.2rem;
       cursor: pointer;
-      border: none;
+      border: 2px solid #ff0000;
       border-radius: 5px;
-      background-color: #007bff;
-      color: white;
-      transition: background-color 0.2s;
+      background-color: transparent;
+      color: #ff0000;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.2s;
     }
     .buttons button:hover {
-      background-color: #0056b3;
+      background-color: #ff0000;
+      color: #000000;
     }
   </style>
 </head>
@@ -80,7 +102,6 @@
       if (isRunning) return;
       isRunning = true;
 
-      // Inicia el sonido de fondo (gracias al clic en "Iniciar" el navegador lo permite)
       bgSound.play().catch(error => {
         console.log("Error al reproducir sonido de fondo: ", error);
       });
@@ -93,11 +114,9 @@
           clearInterval(countdown);
           isRunning = false;
           
-          // Detiene el sonido de fondo al terminar
           bgSound.pause();
           bgSound.currentTime = 0;
           
-          // Reproduce la alarma final
           alarmSound.play().catch(error => {
             console.log("Error al reproducir la alarma: ", error);
           });
@@ -113,7 +132,6 @@
       timeLeft = 300;
       timerDisplay.textContent = formatTime(timeLeft);
       
-      // Detiene y resetea ambos sonidos
       bgSound.pause();
       bgSound.currentTime = 0;
       
