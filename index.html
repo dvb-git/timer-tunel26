@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5-Minute Countdown Timer</title>
+  <title>Temporizador de 5 Minutos con Sonido</title>
   <style>
     body {
       font-family: sans-serif;
@@ -13,11 +13,11 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background: #000000;
+      background: #f4f4f4;
     }
     .container {
       text-align: center;
-      background: #000000;
+      background: #fff;
       padding: 2rem 3rem;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -26,7 +26,7 @@
       font-size: 4rem;
       font-weight: bold;
       margin-bottom: 1.5rem;
-      color: #ff0000;
+      color: #333;
     }
     .buttons button {
       padding: 0.6rem 1.2rem;
@@ -35,12 +35,12 @@
       cursor: pointer;
       border: none;
       border-radius: 5px;
-      background-color: #ff1111;
+      background-color: #007bff;
       color: white;
       transition: background-color 0.2s;
     }
     .buttons button:hover {
-      background-color: #ff0000;
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -49,18 +49,22 @@
   <div class="container">
     <div id="timer">05:00</div>
     <div class="buttons">
-      <button id="start">Start</button>
-      <button id="reset">Reset</button>
+      <button id="start">Iniciar</button>
+      <button id="reset">Reiniciar</button>
     </div>
   </div>
+
+  <!-- Elemento de audio oculto -->
+  <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
   <script>
     const timerDisplay = document.getElementById("timer");
     const startButton = document.getElementById("start");
     const resetButton = document.getElementById("reset");
+    const alarmSound = document.getElementById("alarm-sound");
 
     let countdown;
-    let timeLeft = 300; // 5 minutes in seconds (5 * 60)
+    let timeLeft = 300; // 5 minutos en segundos
     let isRunning = false;
 
     function formatTime(seconds) {
@@ -73,6 +77,8 @@
       if (isRunning) return;
       isRunning = true;
 
+      // Nota: Los navegadores exigen una interacción del usuario (como hacer clic en "Iniciar") 
+      // antes de permitir que una página web reproduzca audio automáticamente.
       countdown = setInterval(() => {
         if (timeLeft > 0) {
           timeLeft--;
@@ -80,7 +86,13 @@
         } else {
           clearInterval(countdown);
           isRunning = false;
-          alert("Time's up!");
+          
+          // Reproduce el sonido de la alarma
+          alarmSound.play().catch(error => {
+            console.log("Error al reproducir el sonido: ", error);
+          });
+          
+          alert("¡Tiempo cumplido!");
         }
       }, 1000);
     }
@@ -90,6 +102,10 @@
       isRunning = false;
       timeLeft = 300;
       timerDisplay.textContent = formatTime(timeLeft);
+      
+      // Detiene el sonido y lo regresa al principio si se reinicia el temporizador
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
     }
 
     startButton.addEventListener("click", startTimer);
