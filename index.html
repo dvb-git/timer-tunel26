@@ -123,6 +123,10 @@
   <audio id="bg-sound2" src="music-box.mp3" preload="auto" loop></audio>
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
   <audio id="alarm-sound2" src="scream.mp3" preload="auto"></audio>
+  <!-- NUEVO: Audios para los minutos restantes -->
+  <audio id="sound-3min" src="scary-strings.mp3" preload="auto"></audio>
+  <audio id="sound-2min" src="booms.mp3" preload="auto"></audio>
+  <audio id="sound-1min" src="scary-breath.mp3" preload="auto"></audio>
 
   <script>
     const timerDisplay = document.getElementById("timer");
@@ -162,6 +166,18 @@
         if (timeLeft > 0) {
           timeLeft--;
           timerDisplay.textContent = formatTime(timeLeft);
+
+          // =======================================================
+          // NUEVO: Comprobación del tiempo para lanzar audios intermedios
+          // =======================================================
+          if (timeLeft === 180) { // 3 minutos exactamente (3 * 60)
+            sound3min.play().catch(e => console.log("Error al reproducir audio 3 min:", e));
+          } else if (timeLeft === 120) { // 2 minutos exactamente (2 * 60)
+            sound2min.play().catch(e => console.log("Error al reproducir audio 2 min:", e));
+          } else if (timeLeft === 60) { // 1 minuto exactamente (1 * 60)
+            sound1min.play().catch(e => console.log("Error al reproducir audio 1 min:", e));
+          }
+          
         } else {
           clearInterval(countdown);
           isRunning = false;
@@ -190,7 +206,7 @@
     function resetTimer() {
       clearInterval(countdown);
       isRunning = false;
-      timeLeft = 3;
+      timeLeft = 300;
       timerDisplay.textContent = formatTime(timeLeft);
       
       bgSound.pause();
@@ -202,6 +218,11 @@
       alarmSound.currentTime = 0;
       alarmSound2.pause();
       alarmSound2.currentTime = 0;
+
+      // NUEVO: Detener los audios de los minutos si se le da a reiniciar
+      sound3min.pause(); sound3min.currentTime = 0;
+      sound2min.pause(); sound2min.currentTime = 0;
+      sound1min.pause(); sound1min.currentTime = 0;
       
       // NUEVO: Oculta el susto si se le da a reiniciar manualmente
       jumpscareOverlay.style.display = "none";
