@@ -120,7 +120,7 @@
 <body>
 
   <div class="container">
-    <div id="timer">05:00</div>
+    <div id="timer">10:00</div>
     <div id="button-container" class="buttons">
       <button id="start">Iniciar</button>
       <button id="reset">Torna a començar</button>
@@ -156,7 +156,7 @@
     const jumpscareOverlay = document.getElementById("jumpscare");
 
     let countdown;
-    let timeLeft = 300; 
+    let timeLeft = 600; 
     let isRunning = false;
 
     // =======================================================
@@ -203,11 +203,11 @@
           timeLeft--;
           timerDisplay.textContent = formatTime(timeLeft);
 
-          if (timeLeft === 45) { 
-            sound3min.play().catch(e => console.log("Error audio 3 min:", e));
-          } else if (timeLeft === 30) { 
-            sound2min.play().catch(e => console.log("Error audio 2 min:", e));
-          } else if (timeLeft === 15) { 
+          if (timeLeft === 300) { 
+            sound3min.play().catch(e => console.log("Error audio 5 min:", e));
+          } else if (timeLeft === 180) { 
+            sound2min.play().catch(e => console.log("Error audio 3 min:", e));
+          } else if (timeLeft === 60) { 
             sound1min.play().catch(e => console.log("Error audio 1 min:", e));
           }
           
@@ -230,7 +230,7 @@
     function resetTimer() {
       clearInterval(countdown);
       isRunning = false;
-      timeLeft = 90; 
+      timeLeft = 600; 
       timerDisplay.textContent = formatTime(timeLeft);
       
       bgSound.pause(); bgSound.currentTime = 0;
